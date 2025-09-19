@@ -1,0 +1,26 @@
+# Generic terraform ignores
+.terraform/
+.terraform.lock.hcl
+crash.log
+*.tfvars
+*.tfvars.json
+.terraformrc
+terraform.rc
+
+# IDE ignores
+*.swp
+*.DS_Store
+.vscode/
+.idea/
+
+# Python/lamda ignores
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Docker ignores
+*.tar
