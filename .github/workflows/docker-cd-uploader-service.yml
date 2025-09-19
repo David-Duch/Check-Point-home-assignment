@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'application/uploader-service/**'  # Trigger only on changes in this folder
+  workflow_dispatch:   
 
 env:
   AWS_REGION: us-east-1
