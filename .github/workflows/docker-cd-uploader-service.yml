@@ -1,4 +1,4 @@
-name: Docker CD to ECR
+name: Docker CD Uploader Service
 
 on:
   push:
