@@ -1,8 +1,6 @@
 resource "aws_s3_bucket" "this" {
   bucket = var.name
 
-  acl    = "private"
-
   tags = {
     Project = var.project
   }
@@ -21,8 +19,8 @@ resource "aws_s3_bucket_policy" "this_policy" {
         }
         Action   = "s3:*"
         Resource = [
-          "arn:aws:s3:::${var.name}",
-          "arn:aws:s3:::${var.name}/*"
+          aws_s3_bucket.this.arn,
+          "${aws_s3_bucket.this.arn}/*"
         ]
       }
     ]

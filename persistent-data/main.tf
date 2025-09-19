@@ -37,14 +37,16 @@ module "messages_queue" {
 }
 
 module "uploader_lambda" {
-  source             = "./modules/lambda_sqs_s3"
-  lambda_name        = "uploader-service"
-  sqs_queue_arn      = module.messages_queue.queue_arn
-  s3_bucket          = module.sqs_message_storage.bucket_id
-  s3_path            = "uploads/"
+  source = "./modules/lambda_sqs_s3"
+
+  lambda_name         = "uploader-service"
+  image_uri           = "315915553428.dkr.ecr.us-east-1.amazonaws.com/uploader-service:latest"
+  s3_bucket           = module.sqs_message_storage.bucket_id
+  s3_path             = "uploads/"
   schedule_expression = "rate(5 minutes)"
-  image_uri          = "315915553428.dkr.ecr.us-east-1.amazonaws.com/uploader-service:latest"
-  project            = "Checkpoint"
+  project             = "Checkpoint"
+  sqs_arn = module.messages_queue.sqs_arn
+  sqs_url = module.messages_queue.sqs_url
 }
 
 

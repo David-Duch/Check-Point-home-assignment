@@ -1,34 +1,10 @@
-variable "lambda_name" {
-  type        = string
-  description = "Base name for Lambda function"
-}
-
-variable "sqs_queue_arn" {
-  type        = string
-  description = "SQS queue ARN"
-}
-
-variable "s3_bucket" {
-  type        = string
-  description = "S3 bucket name"
-}
-
-variable "s3_path" {
-  type        = string
-  default     = "messages/"
-}
-
-variable "schedule_expression" {
-  type        = string
-  default     = "rate(5 minutes)"
-}
-
-variable "image_uri" {
-  type        = string
-  description = "ECR image URI for Lambda"
-}
-
+variable "lambda_name" {}
+variable "image_uri" {}
+variable "sqs_arn" {}
+variable "sqs_url" {}
+variable "s3_bucket" {}
+variable "s3_path" {}
+variable "schedule_expression" {}
 variable "project" {
-  type        = string
-  default     = "Checkpoint"
+  default = "Checkpoint"
 }

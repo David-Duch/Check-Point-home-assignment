@@ -16,8 +16,9 @@ def lambda_handler(event, context):
     )
 
     messages = response.get("Messages", [])
-
+    print(messages)
     for msg in messages:
+        print(msg)
         obj_key = PATH + msg["MessageId"] + ".txt"
         s3.put_object(Bucket=BUCKET, Key=obj_key, Body=msg["Body"])
         sqs.delete_message(QueueUrl=QUEUE_URL, ReceiptHandle=msg["ReceiptHandle"])

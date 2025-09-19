@@ -1,21 +1,3 @@
-resource "aws_lambda_function" "this" {
-  function_name = "${var.lambda_name}-${terraform.workspace}"
-  package_type  = "Image"
-  image_uri     = var.image_uri
-
-  environment {
-    variables = {
-      SQS_QUEUE = var.sqs_queue_arn
-      S3_BUCKET = var.s3_bucket
-      S3_PATH   = var.s3_path
-    }
-  }
-
-  tags = {
-    Project = var.project
-  }
-}
-
 resource "aws_iam_role" "lambda_exec_role" {
   name = "${var.lambda_name}-role-${terraform.workspace}"
 
@@ -59,7 +41,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "sqs:DeleteMessage",
           "sqs:GetQueueAttributes"
         ],
-        Resource = var.sqs_queue_arn
+        Resource = var.sqs_arn
       },
       {
         Effect   = "Allow",
@@ -72,6 +54,25 @@ resource "aws_iam_role_policy" "lambda_policy" {
       }
     ]
   })
+}
+
+resource "aws_lambda_function" "this" {
+  function_name = "${var.lambda_name}-${terraform.workspace}"
+  package_type  = "Image"
+  image_uri     = var.image_uri
+  role          = aws_iam_role.lambda_exec_role.arn
+
+  environment {
+    variables = {
+      SQS_QUEUE = var.sqs_url 
+      S3_BUCKET = var.s3_bucket
+      S3_PATH   = var.s3_path
+    }
+  }
+
+  tags = {
+    Project = var.project
+  }
 }
 
 resource "aws_cloudwatch_event_rule" "schedule" {
