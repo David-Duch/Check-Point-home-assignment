@@ -82,7 +82,7 @@ terraform apply
 In our case we expect to see:
 No changes. Your infrastructure matches the configuration.
 
-To recreate the full application infrastructure in a new workspace (e.g., dev), choose a short workspace name. Some AWS services have name length limits (typically 32 characters), so shorter names help avoid issues.
+To recreate the full application infrastructure in a new workspace (for example: dev), choose a short workspace name. Some AWS services have name length limits (typically 32 characters), so shorter names help avoid issues.
 ```
 cd terraform
 terraform workspace new dev 
@@ -122,7 +122,22 @@ We expect to see:
 ```
 ## Service Architecture
 
-
+## GitHub Actions 
+There are 4 main workflows: 
+Build Token Validor Service - builds and pushes the docker to the relevant ECR with the tag: token-**run-number** (for example token-6). 
+Build Uploader Service - builds and pushes the docker to the relevant ECR with the tag: upload-**run-number** (for example upload-5). 
+Deploy Token Validator Service - Inputs:  
+```
+Image tag: token-6
+Environment: prod
+```
+This will tag the token-6 image with prod and will trigger ECS deployment with new image.
+Deploy Uploader Service - Inputs:
+```
+Image tag: upload-5
+Environment: prod
+```
+This will tag the upload-5 image with prod and will trigger a Lambda deployment with new image.
 
 ## API Calls
 > [!NOTE]
