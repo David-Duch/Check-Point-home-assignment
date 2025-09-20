@@ -1,4 +1,4 @@
-# Check Point Home Assignment
+<img width="651" height="428" alt="diagram" src="https://github.com/user-attachments/assets/c5732c95-e716-413f-b872-4ab100d0e914" /># Check Point Home Assignment
 
 Solution for the Check Point home assignment implementing a file upload system.
 
@@ -129,18 +129,18 @@ We expect to see:
 ## GitHub Actions 
 There are 4 main workflows: 
 
-Build Token Validor Service - builds and pushes the docker to the relevant ECR with the tag: token-**run-number** (for example token-6). 
+**Build Token Validor Service** - builds and pushes the docker to the relevant ECR with the tag: token-**run-number** (for example token-6). 
 
-Build Uploader Service - builds and pushes the docker to the relevant ECR with the tag: upload-**run-number** (for example upload-5). 
+**Build Uploader Service** - builds and pushes the docker to the relevant ECR with the tag: upload-**run-number** (for example upload-5). 
 
-Deploy Token Validator Service - Inputs:  
+**Deploy Token Validator Service** - Inputs:  
 ```
 Image tag: token-6
 Environment: prod
 ```
 This will tag the token-6 image with prod and will trigger ECS deployment with new image.
 
-Deploy Uploader Service - Inputs:
+**Deploy Uploader Service** - Inputs:
 ```
 Image tag: upload-5
 Environment: prod
