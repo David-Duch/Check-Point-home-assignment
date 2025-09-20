@@ -16,16 +16,81 @@ module "vpc" {
   source               = "./modules/vpc"
   name                 = "checkpoint"
   cidr_block           = "10.10.0.0/16"
-  public_subnet_cidr   = "10.10.1.0/24"
-  private_subnet_cidr  = "10.10.2.0/24"
-  availability_zone    = "us-east-1a"
+
+  public_subnet_cidrs  = ["10.10.1.0/24", "10.10.2.0/24"]
+  private_subnet_cidrs = ["10.10.3.0/24", "10.10.4.0/24"]
+
+  availability_zones   = ["us-east-1a", "us-east-1b"]
+
   project              = "Checkpoint"
+}
+
+module "alb_sg" {
+  source = "./modules/security_group"
+  name   = "alb-sg"
+  vpc_id = module.vpc.vpc_id
+
+  ingress_rules = [
+    {
+      from_port    = 443
+      to_port      = 443
+      protocol     = "tcp"
+      cidr_blocks  = ["0.0.0.0/0"]
+      source_sg_id = ""   
+    }
+  ]
+
+  egress_rules = [
+    {
+      from_port         = 0
+      to_port           = 0
+      protocol          = "-1"
+      cidr_blocks       = ["0.0.0.0/0"]
+      destination_sg_id = ""  
+    }
+  ]
+}
+
+module "token_validator_sg" {
+  source = "./modules/security_group"
+  name   = "token-validator-sg"
+  vpc_id = module.vpc.vpc_id
+
+  ingress_rules = [
+    {
+      from_port     = 443
+      to_port       = 443
+      protocol      = "tcp"
+      cidr_blocks   = []
+      source_sg_id  = module.alb_sg.sg_id
+    }
+  ]
+
+  egress_rules = [
+    {
+      from_port         = 0
+      to_port           = 0
+      protocol          = "-1"
+      cidr_blocks       = ["0.0.0.0/0"]
+      destination_sg_id = ""
+    }
+  ]
 }
 
 module "alfee_acm_cert" {
   source      = "./modules/acm_cert"
   domain_name = "alfee.site"
   project     = "Checkpoint"
+}
+
+module "alb" {
+  source          = "./modules/alb"
+  name            = "alb"
+  vpc_id          = module.vpc.vpc_id
+  subnets         = module.vpc.public_subnet_ids
+  alb_sg_id       = module.alb_sg.sg_id  
+  certificate_arn = module.alfee_acm_cert.certificate_arn  
+  project         = "Checkpoint"
 }
 
 module "token_validator_ecr" {
