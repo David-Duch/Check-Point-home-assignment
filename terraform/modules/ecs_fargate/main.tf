@@ -59,7 +59,7 @@ resource "aws_ecs_task_definition" "this" {
         }
       ]
       environment = [
-        { name = "SQS_URL", value = var.sqs_arn } 
+        { name = "SQS_URL", value = var.sqs_url } 
       ]
       secrets = [
         {

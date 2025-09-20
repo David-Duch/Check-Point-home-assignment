@@ -50,6 +50,6 @@ variable "token_param_arn" {
   type = string
 }
 
-variable "sqs_arn" {
+variable "sqs_url" {
   type = string
 }

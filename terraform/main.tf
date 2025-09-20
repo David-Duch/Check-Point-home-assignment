@@ -152,7 +152,7 @@ module "token_validator_service" {
   memory           = 1024
   desired_count    = 1
   token_param_arn  = "arn:aws:ssm:us-east-1:315915553428:parameter/secure_token"
-  sqs_arn          = module.messages_queue.sqs_arn
+  sqs_url          = module.messages_queue.sqs_url
 }
 
 
