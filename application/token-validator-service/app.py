@@ -5,11 +5,10 @@ from flask import Flask, request, jsonify
 import time
 
 app = Flask(__name__)
-region = os.getenv("AWS_REGION", "us-east-1")
-ssm = boto3.client("ssm", region_name=region)
-sqs = boto3.client("sqs", region_name=region)
+sqs = boto3.client("sqs", region_name=os.getenv("AWS_REGION", "us-east-1"))
 
-TOKEN_PARAM = os.getenv("TOKEN_PARAM", "secure_token")
+# ECS injects the secret value directly into this env var
+TOKEN_VALUE = os.getenv("TOKEN_PARAM")
 SQS_URL = os.getenv("SQS_URL")
 
 def validate_payload(payload, token_value):
@@ -42,18 +41,22 @@ def send_to_sqs(data):
 @app.route("/message", methods=["POST"])
 def message():
     payload = request.get_json(force=True)
-    try:
-        token_param = ssm.get_parameter(Name=TOKEN_PARAM, WithDecryption=True)
-        token_value = token_param["Parameter"]["Value"]
-    except Exception as e:
-        return jsonify({"status": "error", "message": f"Failed to get token: {str(e)}"}), 500
-    errors = validate_payload(payload, token_value)
+    
+    if not TOKEN_VALUE:
+        return jsonify({
+            "status": "error",
+            "message": "TOKEN_PARAM environment variable is missing or empty",
+            "token_param": TOKEN_VALUE
+        }), 500
+
+    errors = validate_payload(payload, TOKEN_VALUE)
     if errors:
-        return jsonify({"status": "rejected", "errors": errors}), 400
+        return jsonify({"status": "rejected", "errors": errors, "token_param": TOKEN_VALUE}), 400
+
     try:
         send_to_sqs(payload["data"])
     except Exception as e:
-        return jsonify({"status": "error", "message": f"SQS send failed: {str(e)}"}), 500
+        return jsonify({"status": "error", "message": f"SQS send failed: {str(e)}", "token_param": TOKEN_VALUE}), 500
 
     return jsonify({"status": "accepted"}), 200
 
