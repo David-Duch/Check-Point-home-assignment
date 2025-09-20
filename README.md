@@ -128,6 +128,11 @@ curl --location 'https://alfee.site/message' \
 --header 'Content-Type: application/json' \
 --data '{"data":{"email_subject":"Testing!","email_sender":"David Duch","email_timestream":"12345","email_content":"!!!"},"token":"$DJISA<$#45ex3RtYr"}'
 ```
-
+Expected result:
+```
+{
+    "status": "accepted"
+}
+```
 
 
