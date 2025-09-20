@@ -67,3 +67,13 @@ jobs:
               --output text)"
 
           echo "Image $IMAGE_TAG successfully tagged as $ENV"
+
+      - name: Update Lambda function to new image
+        run: |
+          ENV="${{ github.event.inputs.env }}"
+          LAMBDA_NAME="uploader-service-${ENV}"
+          echo "Updating Lambda function $LAMBDA_NAME to use image tag $ENV..."
+          aws lambda update-function-code \
+            --function-name $LAMBDA_NAME \
+            --image-uri $ECR_REPO:$ENV
+          echo "Lambda function updated successfully."

@@ -1,4 +1,4 @@
-name: Docker Build Uploader Service
+name: Build Uploader Service
 
 on:
   push:

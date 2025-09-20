@@ -1,4 +1,4 @@
-name: Docker Build Token Validator Service
+name: Build Token Validator Service
 
 on:
   push:

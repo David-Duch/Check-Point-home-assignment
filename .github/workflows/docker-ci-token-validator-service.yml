@@ -67,3 +67,15 @@ jobs:
               --output text)"
 
           echo "Image $IMAGE_TAG successfully tagged as $ENV"
+
+      - name: Force ECS service deployment
+        run: |
+          ENV="${{ github.event.inputs.env }}"
+          CLUSTER_NAME="token-validator-service-cluster-${ENV}"
+          SERVICE_NAME="token-validator-service-${ENV}"
+          echo "Forcing new deployment on ECS service $SERVICE_NAME in cluster $CLUSTER_NAME..."
+          aws ecs update-service \
+            --cluster $CLUSTER_NAME \
+            --service $SERVICE_NAME \
+            --force-new-deployment
+          echo "ECS service deployment triggered."
