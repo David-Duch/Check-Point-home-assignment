@@ -1,0 +1,56 @@
+name: Docker CD Token Validator Service
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'application/token-validator-service/**'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPO: 315915553428.dkr.ecr.us-east-1.amazonaws.com/token-validator-service
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | \
+          docker login --username AWS --password-stdin $ECR_REPO
+
+      - name: Build Docker image
+        run: |
+          docker build -t token-validator-service ./application/token-validator-service
+
+      - name: Tag Docker image
+        run: |
+          docker tag token-validator-service:latest $ECR_REPO:$IMAGE_TAG
+          docker tag token-validator-service:latest $ECR_REPO:latest
+
+      - name: Push Docker image
+        run: |
+          docker push $ECR_REPO:$IMAGE_TAG
+          docker push $ECR_REPO:latest
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.ECR_REPO }}:latest
+          format: table
+          severity: HIGH,CRITICAL
+          exit-code: 0
