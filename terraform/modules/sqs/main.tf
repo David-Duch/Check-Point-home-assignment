@@ -1,5 +1,7 @@
 resource "aws_sqs_queue" "this" {
-  name = "${var.name}-${terraform.workspace}"
+  name = "${var.name}.fifo"
+  fifo_queue = true
+  content_based_deduplication = true
 
   visibility_timeout_seconds = 30
   message_retention_seconds  = 86400
