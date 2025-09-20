@@ -11,7 +11,7 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REPO: 315915553428.dkr.ecr.us-east-1.amazonaws.com/token-validator-service
-  IMAGE_TAG: "token-${{ github.run_id }}"
+  IMAGE_TAG: "token-${{ github.run_number  }}"
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
