@@ -10,7 +10,6 @@ The system consists of two main services and comprehensive AWS infrastructure ma
 ### Key Components
 
 1. **Microservices**:
-
    - **Token Validator Service**: Validates upload tokens - ECS
    - **Uploader Service**: Handles file upload operations - Lambda
 
@@ -20,7 +19,7 @@ The system consists of two main services and comprehensive AWS infrastructure ma
    - S3 for file storage
    - SQS for message queuing
    - Lambda for serverless processing
-   - Route53 for DNS management - not functioning currently on namecheap side
+   - Route53 for DNS management - not functioning currently on namecheap side  - https://alfee.site
 
 ## Project Structure
 
@@ -51,28 +50,26 @@ terraform/                     # Infrastructure as Code
 ```
 
 ## Getting Started
-The terraform configuration uses the workspace (environment) in the resource name thus reusing genric modules to create multiple environemtns easily. 
-Currently there is one main envrironment which is: **prod** 
-After cloning the repo.
-Authenticate with AWS:
+The Terraform configuration incorporates the workspace (environment) into each resource name, allowing generic modules to be reused across multiple environments.
+At the moment, only one main environment exists: prod.
+After cloning the repository, authenticate with AWS:
 ```
 aws configure sso
 ```
-Move to terraform folder, init and select workspace 
+Navigate to the Terraform folder, initialize the project, and select the desired workspace:
 ```
 cd terraform
 terraform init
 terraform workspace select prod
 ```
-Now you can apply the entire module stack (planning before hand to see changes can be helpful).
+You can now apply the full Terraform module stack. It’s often helpful to run a plan first to review the changes:
 ```
 terraform apply 
 ```
 In our case we expect to see:
 No changes. Your infrastructure matches the configuration.
 
-To recreate the full application infrastructure in a new workspace: 
-dev workspace but any short name will match (aws has multiple services where longer names 32 chars and above can cause issues). 
+To recreate the full application infrastructure in a new workspace (e.g., dev), choose a short workspace name. Some AWS services have name length limits (typically 32 characters), so shorter names help avoid issues.
 ```
 cd terraform
 terraform workspace new dev 
@@ -83,7 +80,7 @@ We expect to see:
 **Plan: 48 to add, 0 to change, 0 to destroy.
 **
 > [!CAUTION]
-> Occasionally we run into an unresolved error due to applying order, applying twice usually solves it. 
+> Occasionally, Terraform may encounter an error due to resource dependency order. Running terraform apply a second time usually resolves it.
 ```
 ╷
 │ Error: Invalid count argument
@@ -110,27 +107,27 @@ We expect to see:
 │
 │ Alternatively, you could use the -target planning option to first apply only the resources
 ```
-## Infrastructure Details
+## Service Architecture
 
 
-### Networking
 
-- VPC configuration for secure network isolation
-- Security groups for fine-grained access control
-- Route53 for DNS management - not functioning
+## API Calls
+> [!NOTE]
+> The service supports HTTPS only and has a valid certificate.
 
-### Compute
+These calls are importable to postman by copy paste.
+Health check:
+```
+curl --location 'https://alfee.site/health'
+```
+Expected result 200 OK. 
 
-- ECS Fargate for running containerized services
-- Lambda functions for event-driven processing
+Valid call, should send a message to the validating service (token is correct and formatter well), thus it will be sent to the SQS and pulled by the Lambda in the next 5 minute cycle and uploaded to S3: 
+```
+curl --location 'https://alfee.site/message' \
+--header 'Content-Type: application/json' \
+--data '{"data":{"email_subject":"Testing!","email_sender":"David Duch","email_timestream":"12345","email_content":"!!!"},"token":"$DJISA<$#45ex3RtYr"}'
+```
 
-### Storage and Messaging
 
-- S3 buckets for secure file storage
-- SQS queues for reliable message processing
 
-### Security
-
-- ACM certificates for SSL/TLS
-- IAM roles and policies for secure access
-- Security groups for network isolation
