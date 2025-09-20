@@ -122,6 +122,10 @@ We expect to see:
 ```
 ## Service Architecture
 
+<img width="651" height="428" alt="diagram" src="https://github.com/user-attachments/assets/0b415db0-33ac-4b12-b96d-e897d8e5043e" />
+
+
+
 ## GitHub Actions 
 There are 4 main workflows: 
 Build Token Validor Service - builds and pushes the docker to the relevant ECR with the tag: token-**run-number** (for example token-6). 
