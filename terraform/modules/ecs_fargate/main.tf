@@ -108,12 +108,15 @@ resource "aws_lb_target_group" "this" {
   vpc_id   = var.vpc_id
   target_type = "ip"
   health_check {
-    path                = "/health"
+    enabled             = true
+    protocol            = "HTTP"
+    path                = "/health"      
+    port                = "5000"         
     interval            = 30
-    timeout             = 5
+    timeout             = 10            
     healthy_threshold   = 2
-    unhealthy_threshold = 2
-    matcher             = "200-399"
+    unhealthy_threshold = 5
+    matcher             = "200"
   }
 }
 
@@ -121,7 +124,7 @@ resource "aws_lb_target_group" "this" {
 resource "aws_ecs_service" "this" {
   name            = "${var.service_name}-${terraform.workspace}"
   cluster         = aws_ecs_cluster.this.id
-  task_definition = aws_ecs_task_definition.this.arn
+  task_definition = aws_ecs_task_definition.this.arn  
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
 

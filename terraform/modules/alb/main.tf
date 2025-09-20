@@ -27,7 +27,7 @@ resource "aws_lb_listener" "https" {
   }
 }
 
-resource "aws_lb_listener_rule" "messages" {
+resource "aws_lb_listener_rule" "message" {
   count        = var.messages_target_group_arn != "" ? 1 : 0
   listener_arn = aws_lb_listener.https.arn
   priority     = 1
@@ -39,7 +39,7 @@ resource "aws_lb_listener_rule" "messages" {
 
   condition {
     path_pattern {
-      values = ["/messages*"]
+      values = ["/message*"]
     }
   }
 }

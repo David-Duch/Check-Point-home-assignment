@@ -63,6 +63,13 @@ module "token_validator_sg" {
       protocol      = "tcp"
       cidr_blocks   = []
       source_sg_id  = module.alb_sg.sg_id
+    },
+    {
+      from_port     = 5000
+      to_port       = 5000
+      protocol      = "tcp"
+      cidr_blocks   = []
+      source_sg_id  = module.alb_sg.sg_id
     }
   ]
 

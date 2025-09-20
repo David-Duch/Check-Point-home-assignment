@@ -13,16 +13,23 @@ TOKEN_PARAM = os.getenv("TOKEN_PARAM", "/secure_token")
 SQS_URL = os.getenv("SQS_URL")
 
 def validate_payload(payload, token_value):
-    try:
-        data = payload["data"]
-        if payload.get("token") != token_value:
-            return False
-        if not all(k in data for k in ["email_subject","email_sender","email_timestream","email_content"]):
-            return False
-        int(data["email_timestream"])
-        return True
-    except (KeyError, ValueError, TypeError):
-        return False
+    errors = []
+    data = payload.get("data")
+    if not data:
+        errors.append("Missing 'data' key in payload")
+    else:
+        required_keys = ["email_subject", "email_sender", "email_timestream", "email_content"]
+        missing_keys = [k for k in required_keys if k not in data]
+        if missing_keys:
+            errors.append(f"Missing keys in data: {missing_keys}")
+        try:
+            int(data.get("email_timestream", ""))
+        except (ValueError, TypeError):
+            errors.append(f"email_timestream is not a valid integer: {data.get('email_timestream')}")
+
+    if payload.get("token") != token_value:
+        errors.append("Invalid token")
+    return errors
 
 def send_to_sqs(data):
     sqs.send_message(
