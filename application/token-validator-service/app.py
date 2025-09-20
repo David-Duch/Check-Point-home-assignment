@@ -42,12 +42,20 @@ def send_to_sqs(data):
 @app.route("/message", methods=["POST"])
 def message():
     payload = request.get_json(force=True)
-    token_param = ssm.get_parameter(Name=TOKEN_PARAM, WithDecryption=True)
-    token_value = token_param["Parameter"]["Value"]
-    if validate_payload(payload, token_value):
+    try:
+        token_param = ssm.get_parameter(Name=TOKEN_PARAM, WithDecryption=True)
+        token_value = token_param["Parameter"]["Value"]
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Failed to get token: {str(e)}"}), 500
+    errors = validate_payload(payload, token_value)
+    if errors:
+        return jsonify({"status": "rejected", "errors": errors}), 400
+    try:
         send_to_sqs(payload["data"])
-        return jsonify({"status":"accepted"}), 200
-    return jsonify({"status":"rejected due to failed validation"}), 400
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"SQS send failed: {str(e)}"}), 500
+
+    return jsonify({"status": "accepted"}), 200
 
 @app.route("/health", methods=["GET"])
 def health():
