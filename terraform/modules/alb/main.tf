@@ -27,17 +27,19 @@ resource "aws_lb_listener" "https" {
   }
 }
 
-# Placeholder for future rules on port 443
-# resource "aws_lb_listener_rule" "example" {
-#   listener_arn = aws_lb_listener.https.arn
-#   priority     = 100
-#   action {
-#     type             = "forward"
-#     target_group_arn = "<TARGET_GROUP_ARN>"
-#   }
-#   condition {
-#     path_pattern {
-#       values = ["/example*"]
-#     }
-#   }
-# }
+resource "aws_lb_listener_rule" "messages" {
+  count        = var.messages_target_group_arn != "" ? 1 : 0
+  listener_arn = aws_lb_listener.https.arn
+  priority     = 1
+
+  action {
+    type             = "forward"
+    target_group_arn = var.messages_target_group_arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/messages*"]
+    }
+  }
+}

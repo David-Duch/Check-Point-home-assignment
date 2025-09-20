@@ -90,6 +90,7 @@ module "alb" {
   subnets         = module.vpc.public_subnet_ids
   alb_sg_id       = module.alb_sg.sg_id  
   certificate_arn = module.alfee_acm_cert.certificate_arn  
+  messages_target_group_arn = module.token_validator_service.target_group_arn
   project         = "Checkpoint"
 }
 
@@ -128,6 +129,23 @@ module "uploader_lambda" {
   project             = "Checkpoint"
   sqs_arn = module.messages_queue.sqs_arn
   sqs_url = module.messages_queue.sqs_url
+}
+
+module "token_validator_service" {
+  source           = "./modules/ecs_fargate"
+  aws_region       = "us-east-1"
+  vpc_id          = module.vpc.vpc_id
+  service_name     = "token-validator-service"
+  project          = "Checkpoint"
+  private_subnets  = module.vpc.private_subnet_ids
+  security_groups  = [module.token_validator_sg.sg_id]
+  image_url        = "315915553428.dkr.ecr.us-east-1.amazonaws.com/token-validator-service:latest"
+  container_port   = 5000
+  cpu              = 512
+  memory           = 1024
+  desired_count    = 1
+  token_param_arn  = "arn:aws:ssm:us-east-1:315915553428:parameter/secure_token"
+  sqs_arn          = module.messages_queue.sqs_arn
 }
 
 

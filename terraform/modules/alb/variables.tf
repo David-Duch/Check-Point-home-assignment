@@ -28,3 +28,8 @@ variable "certificate_arn" {
   type        = string
   description = "ARN of the ACM certificate to use for HTTPS"
 }
+
+variable "messages_target_group_arn" {
+  type        = string
+  default     = ""  # optional if sometimes empty
+}

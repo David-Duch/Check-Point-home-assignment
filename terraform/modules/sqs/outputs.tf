@@ -8,5 +8,5 @@ output "sqs_arn" {
 }
 
 output "sqs_url" {
-  value = aws_sqs_queue.this.id
+  value = aws_sqs_queue.this.url
 }

@@ -6,7 +6,7 @@ resource "aws_vpc" "this" {
   }
 }
 
-# Internet Gateway
+# Internet Gateway for public subnets
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
   tags = {
@@ -55,6 +55,44 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public.id
 }
 
+resource "aws_eip" "nat" {
+  for_each = aws_subnet.public
+  depends_on = [aws_internet_gateway.this]
+
+  tags = {
+    Name    = "${var.name}-nat-${each.key}"
+    Project = var.project
+  }
+}
+
+# NAT Gateways in public subnets
+resource "aws_nat_gateway" "this" {
+  for_each     = aws_subnet.public
+  allocation_id = aws_eip.nat[each.key].id
+  subnet_id     = each.value.id
+  
+  tags = {
+    Name    = "${var.name}-nat-${each.key}"
+    Project = var.project
+  }
+}
+
+# Private Route Table
+resource "aws_route_table" "private" {
+  for_each = aws_subnet.private
+  vpc_id = aws_vpc.this.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.this[each.key].id
+  }
+
+  tags = {
+    Name    = "${var.name}-private-rt-${each.key}"
+    Project = var.project
+  }
+}
+
 # Private Subnets
 resource "aws_subnet" "private" {
   for_each = {
@@ -70,4 +108,11 @@ resource "aws_subnet" "private" {
     Name    = "${var.name}-private-${each.key}"
     Project = var.project
   }
+}
+
+# Associate private subnets with private route table
+resource "aws_route_table_association" "private" {
+  for_each = aws_subnet.private
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.private[each.key].id
 }
