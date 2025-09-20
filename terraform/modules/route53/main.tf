@@ -6,7 +6,6 @@ resource "aws_route53_zone" "this" {
   }
 }
 
-# Optional: default place to define records
 resource "aws_route53_record" "this" {
   for_each = var.records
 

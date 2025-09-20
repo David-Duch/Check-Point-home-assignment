@@ -7,7 +7,6 @@ resource "aws_security_group" "this" {
   }
 }
 
-# Ingress - CIDR blocks
 resource "aws_security_group_rule" "ingress_cidr" {
   for_each = { for i, r in var.ingress_rules : i => r if length(r.cidr_blocks) > 0 }
 
@@ -20,7 +19,6 @@ resource "aws_security_group_rule" "ingress_cidr" {
   cidr_blocks = each.value.cidr_blocks
 }
 
-# Ingress - Source SG
 resource "aws_security_group_rule" "ingress_sg" {
   for_each = { for i, r in var.ingress_rules : i => r if can(r.source_sg_id) && r.source_sg_id != "" }
 
@@ -32,7 +30,6 @@ resource "aws_security_group_rule" "ingress_sg" {
   source_security_group_id = each.value.source_sg_id
 }
 
-# Egress - CIDR blocks
 resource "aws_security_group_rule" "egress_cidr" {
   for_each = { for i, r in var.egress_rules : i => r if length(r.cidr_blocks) > 0 }
 
@@ -45,7 +42,6 @@ resource "aws_security_group_rule" "egress_cidr" {
   cidr_blocks = each.value.cidr_blocks
 }
 
-# Egress - Destination SG
 resource "aws_security_group_rule" "egress_sg" {
   for_each = { for i, r in var.egress_rules : i => r if can(r.destination_sg_id) && r.destination_sg_id != "" }
 

@@ -12,6 +12,7 @@ provider "aws" {
   region = "us-east-1"
 }
 
+# Create default vpc with 2 private and 2 public subnets. 
 module "vpc" {
   source               = "./modules/vpc"
   name                 = "checkpoint"
@@ -25,6 +26,7 @@ module "vpc" {
   project              = "Checkpoint"
 }
 
+#Create security groups for ALB and ECS.
 module "alb_sg" {
   source = "./modules/security_group"
   name   = "alb-sg"
@@ -84,12 +86,14 @@ module "token_validator_sg" {
   ]
 }
 
+#Create Certificate for ALB.
 module "alfee_acm_cert" {
   source      = "./modules/acm_cert"
   domain_name = "alfee.site"
   project     = "Checkpoint"
 }
 
+#Create ALB.
 module "alb" {
   source          = "./modules/alb"
   name            = "alb"
@@ -101,6 +105,7 @@ module "alb" {
   project         = "Checkpoint"
 }
 
+#Create ECR repositories for both services. 
 module "token_validator_ecr" {
   source     = "./modules/ecr"
   name       = "token-validator-service"
@@ -113,18 +118,21 @@ module "uploader_ecr" {
   account_id = var.account_id
 }
 
+#Create S3 for message storage.
 module "sqs_message_storage" {
   source     = "./modules/s3"
   name       = "sqs-message-storage-${terraform.workspace}-${var.account_id}"
   account_id = var.account_id
 }
 
+#Create main SQS
 module "messages_queue" {
   source     = "./modules/sqs"
   name       = "messages-queue-${terraform.workspace}"
   account_id = var.account_id
 }
 
+#Create Lambda with eventbridge to upload get messages from SQS and upload to S3 every 5 minutes. 
 module "uploader_lambda" {
   source = "./modules/lambda_sqs_s3"
 
@@ -138,6 +146,7 @@ module "uploader_lambda" {
   sqs_url = module.messages_queue.sqs_url
 }
 
+#Create a service to validate the token and incoming request.
 module "token_validator_service" {
   source           = "./modules/ecs_fargate"
   aws_region       = "us-east-1"
@@ -155,7 +164,7 @@ module "token_validator_service" {
   sqs_url          = module.messages_queue.sqs_url
 }
 
-
+#Temporary DNS hosted zone setup, not yet functional, since DNS rerouting from Namecheap may take up to 48 hours.
 module "alfee_site_dns" {
   source      = "./modules/route53"
   domain_name = "alfee.site"

@@ -1,9 +1,7 @@
-# ECS Cluster
 resource "aws_ecs_cluster" "this" {
   name = "${var.service_name}-cluster-${terraform.workspace}"
 }
 
-# IAM role for ECS task (execution + task role)
 resource "aws_iam_role" "ecs_task_role" {
   name = "${var.service_name}-task-role-${terraform.workspace}"
 
@@ -19,7 +17,6 @@ resource "aws_iam_role" "ecs_task_role" {
   tags = { Project = var.project }
 }
 
-# ECS task policy
 resource "aws_iam_role_policy" "ecs_task_policy" {
   name = "${var.service_name}-task-policy-${terraform.workspace}"
   role = aws_iam_role.ecs_task_role.id
@@ -36,7 +33,6 @@ resource "aws_iam_role_policy" "ecs_task_policy" {
   })
 }
 
-# ECS Task Definition
 resource "aws_ecs_task_definition" "this" {
   family                   = "${var.service_name}-${terraform.workspace}"
   network_mode             = "awsvpc"
@@ -71,7 +67,6 @@ resource "aws_ecs_task_definition" "this" {
   ])
 }
 
-# ALB Target Group
 resource "aws_lb_target_group" "this" {
   name     = "${var.service_name}-tg-${terraform.workspace}"
   port     = var.container_port
@@ -91,7 +86,6 @@ resource "aws_lb_target_group" "this" {
   }
 }
 
-# ECS Service
 resource "aws_ecs_service" "this" {
   name            = "${var.service_name}-${terraform.workspace}"
   cluster         = aws_ecs_cluster.this.id

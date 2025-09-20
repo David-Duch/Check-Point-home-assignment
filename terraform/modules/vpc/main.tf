@@ -6,7 +6,6 @@ resource "aws_vpc" "this" {
   }
 }
 
-# Internet Gateway for public subnets
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
   tags = {
@@ -15,7 +14,6 @@ resource "aws_internet_gateway" "this" {
   }
 }
 
-# Public Route Table
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
 
@@ -30,7 +28,6 @@ resource "aws_route_table" "public" {
   }
 }
 
-# Public Subnets
 resource "aws_subnet" "public" {
   for_each = {
     for idx, cidr in var.public_subnet_cidrs :
@@ -48,7 +45,6 @@ resource "aws_subnet" "public" {
   }
 }
 
-# Associate public subnets with public route table
 resource "aws_route_table_association" "public" {
   for_each = aws_subnet.public
   subnet_id      = each.value.id
@@ -65,7 +61,6 @@ resource "aws_eip" "nat" {
   }
 }
 
-# NAT Gateways in public subnets
 resource "aws_nat_gateway" "this" {
   for_each     = aws_subnet.public
   allocation_id = aws_eip.nat[each.key].id
@@ -77,7 +72,6 @@ resource "aws_nat_gateway" "this" {
   }
 }
 
-# Private Route Table
 resource "aws_route_table" "private" {
   for_each = aws_subnet.private
   vpc_id = aws_vpc.this.id
@@ -93,7 +87,6 @@ resource "aws_route_table" "private" {
   }
 }
 
-# Private Subnets
 resource "aws_subnet" "private" {
   for_each = {
     for idx, cidr in var.private_subnet_cidrs :
@@ -110,7 +103,6 @@ resource "aws_subnet" "private" {
   }
 }
 
-# Associate private subnets with private route table
 resource "aws_route_table_association" "private" {
   for_each = aws_subnet.private
   subnet_id      = each.value.id
