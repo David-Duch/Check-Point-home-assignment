@@ -129,7 +129,7 @@ module "uploader_lambda" {
   source = "./modules/lambda_sqs_s3"
 
   lambda_name         = "uploader-service"
-  image_uri           = "315915553428.dkr.ecr.us-east-1.amazonaws.com/uploader-service:latest"
+  image_uri           = "315915553428.dkr.ecr.us-east-1.amazonaws.com/uploader-service:${terraform.workspace}"
   s3_bucket           = module.sqs_message_storage.bucket_id
   s3_path             = "uploads/"
   schedule_expression = "rate(5 minutes)"
@@ -146,7 +146,7 @@ module "token_validator_service" {
   project          = "Checkpoint"
   private_subnets  = module.vpc.private_subnet_ids
   security_groups  = [module.token_validator_sg.sg_id]
-  image_url        = "315915553428.dkr.ecr.us-east-1.amazonaws.com/token-validator-service:latest"
+  image_url        = "315915553428.dkr.ecr.us-east-1.amazonaws.com/token-validator-service:${terraform.workspace}"
   container_port   = 5000
   cpu              = 512
   memory           = 1024

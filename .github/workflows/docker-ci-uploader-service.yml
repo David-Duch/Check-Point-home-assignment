@@ -13,7 +13,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPO: 315915553428.dkr.ecr.us-east-1.amazonaws.com/token-validator-service
+  ECR_REPO: 315915553428.dkr.ecr.us-east-1.amazonaws.com/uploader-service
 
 jobs:
   ecr-tag:
@@ -34,7 +34,7 @@ jobs:
         run: |
           echo "Images in repository ${ECR_REPO}:"
           aws ecr describe-images \
-            --repository-name token-validator-service \
+            --repository-name uploader-service \
             --query 'imageDetails[*].imageTags' \
             --output text
 
@@ -46,7 +46,7 @@ jobs:
 
           # Get image digest
           DIGEST=$(aws ecr describe-images \
-            --repository-name token-validator-service \
+            --repository-name uploader-service \
             --image-ids imageTag=$IMAGE_TAG \
             --query 'imageDetails[0].imageDigest' \
             --output text)
@@ -58,10 +58,10 @@ jobs:
 
           # Put new tag using the digest
           aws ecr put-image \
-            --repository-name token-validator-service \
+            --repository-name uploader-service \
             --image-tag $ENV \
             --image-manifest "$(aws ecr batch-get-image \
-              --repository-name token-validator-service \
+              --repository-name uploader-service \
               --image-ids imageDigest=$DIGEST \
               --query 'images[0].imageManifest' \
               --output text)"
