@@ -10,11 +10,11 @@ The system consists of two main services and comprehensive AWS infrastructure ma
 ### Tech Stack:
 AWS: ECS (Fargate), Lambda, SQS (FIFO), EventBridge, ALB, VPC.
 
-IaC: Terraform (reusable modules, multiple workspaces)
+IaC: Terraform (reusable modules, multiple workspaces).
 
-CI/CD: GitHub Actions (build, tag, push, deploy Docker images)
+CI/CD: GitHub Actions (build, tag, push, deploy Docker images).
 
-App: Python microservices, Dockerized, SSM-managed secrets
+App: Python microservices, Dockerized, SSM-managed secrets.
 
 ### Key Components
 
@@ -172,3 +172,4 @@ Expected result:
 4. ECS autoscaling – Enable automatic scaling for the microservice.
 5. Testing – Implement unit and integration tests.
 6. Monitoring – Add observability for service health and metrics.
+7. GitHub Actions - improve deploy pipeline with a dropdown list of ECR images. 
