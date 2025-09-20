@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       image-tag:
-        description: 'Docker image tag to retag'
+        description: 'Docker image to Deploy'
         required: true
       env:
-        description: 'Environment to tag for'
+        description: 'Environment'
         required: true
         default: 'prod'
 
@@ -33,7 +33,10 @@ jobs:
       - name: List all ECR images
         run: |
           echo "Images in repository ${ECR_REPO}:"
-          aws ecr describe-images --repository-name token-validator-service --query 'imageDetails[*].imageTags' --output table
+          aws ecr describe-images \
+            --repository-name token-validator-service \
+            --query 'imageDetails[*].imageTags' \
+            --output text
 
       - name: Tag selected image with environment
         run: |
@@ -57,6 +60,10 @@ jobs:
           aws ecr put-image \
             --repository-name token-validator-service \
             --image-tag $ENV \
-            --image-manifest "$(aws ecr batch-get-image --repository-name token-validator-service --image-ids imageDigest=$DIGEST --query 'images[0].imageManifest' --output text)"
+            --image-manifest "$(aws ecr batch-get-image \
+              --repository-name token-validator-service \
+              --image-ids imageDigest=$DIGEST \
+              --query 'images[0].imageManifest' \
+              --output text)"
 
           echo "Image $IMAGE_TAG successfully tagged as $ENV"
