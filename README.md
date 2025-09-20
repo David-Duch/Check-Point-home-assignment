@@ -7,7 +7,7 @@ Solution for the Check Point home assignment implementing a file upload system.
 This project implements a file upload system using AWS services and containerized microservices.
 The system consists of two main services and comprehensive AWS infrastructure managed through Terraform.
 
-###Tech Stack:
+### Tech Stack:
 AWS: ECS (Fargate), Lambda, SQS (FIFO), EventBridge, ALB, VPC.
 IaC: Terraform (reusable modules, multiple workspaces)
 CI/CD: GitHub Actions (build, tag, push, deploy Docker images)
