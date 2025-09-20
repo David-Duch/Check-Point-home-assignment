@@ -1,6 +1,6 @@
-<img width="651" height="428" alt="diagram" src="https://github.com/user-attachments/assets/c5732c95-e716-413f-b872-4ab100d0e914" /># Check Point Home Assignment
+# Check Point Home Assignment
 
-Solution for the Check Point home assignment implementing a file upload system.
+Solution for the Check Point home assignment implementing a message upload system.
 
 ## Architecture Overview
 
