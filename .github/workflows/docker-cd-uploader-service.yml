@@ -1,4 +1,4 @@
-name: Docker CD Uploader Service
+name: Docker Build Uploader Service
 
 on:
   push:
@@ -11,8 +11,7 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REPO: 315915553428.dkr.ecr.us-east-1.amazonaws.com/uploader-service
-  IMAGE_TAG: ${{ github.sha }}
-
+  IMAGE_TAG: "upload-${{ github.run_id }}"
 jobs:
   build-and-push:
     runs-on: ubuntu-latest

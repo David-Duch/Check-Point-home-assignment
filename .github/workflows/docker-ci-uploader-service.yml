@@ -1,0 +1,62 @@
+name: Deploy Uploader Service
+
+on:
+  workflow_dispatch:
+    inputs:
+      image-tag:
+        description: 'Docker image tag to retag'
+        required: true
+      env:
+        description: 'Environment to tag for'
+        required: true
+        default: 'prod'
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPO: 315915553428.dkr.ecr.us-east-1.amazonaws.com/token-validator-service
+
+jobs:
+  ecr-tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: List all ECR images
+        run: |
+          echo "Images in repository ${ECR_REPO}:"
+          aws ecr describe-images --repository-name token-validator-service --query 'imageDetails[*].imageTags' --output table
+
+      - name: Tag selected image with environment
+        run: |
+          IMAGE_TAG="${{ github.event.inputs['image-tag'] }}"
+          ENV="${{ github.event.inputs.env }}"
+          echo "Tagging image $IMAGE_TAG as $ENV..."
+
+          # Get image digest
+          DIGEST=$(aws ecr describe-images \
+            --repository-name token-validator-service \
+            --image-ids imageTag=$IMAGE_TAG \
+            --query 'imageDetails[0].imageDigest' \
+            --output text)
+
+          if [ -z "$DIGEST" ]; then
+            echo "Image tag $IMAGE_TAG not found!"
+            exit 1
+          fi
+
+          # Put new tag using the digest
+          aws ecr put-image \
+            --repository-name token-validator-service \
+            --image-tag $ENV \
+            --image-manifest "$(aws ecr batch-get-image --repository-name token-validator-service --image-ids imageDigest=$DIGEST --query 'images[0].imageManifest' --output text)"
+
+          echo "Image $IMAGE_TAG successfully tagged as $ENV"

@@ -1,4 +1,4 @@
-name: Docker CD Token Validator Service
+name: Docker Build Token Validator Service
 
 on:
   push:
@@ -11,8 +11,7 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REPO: 315915553428.dkr.ecr.us-east-1.amazonaws.com/token-validator-service
-  IMAGE_TAG: ${{ github.sha }}
-
+  IMAGE_TAG: "token-${{ github.run_id }}"
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
