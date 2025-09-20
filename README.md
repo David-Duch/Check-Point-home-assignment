@@ -9,8 +9,11 @@ The system consists of two main services and comprehensive AWS infrastructure ma
 
 ### Tech Stack:
 AWS: ECS (Fargate), Lambda, SQS (FIFO), EventBridge, ALB, VPC.
+
 IaC: Terraform (reusable modules, multiple workspaces)
+
 CI/CD: GitHub Actions (build, tag, push, deploy Docker images)
+
 App: Python microservices, Dockerized, SSM-managed secrets
 
 ### Key Components
