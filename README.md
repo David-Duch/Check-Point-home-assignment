@@ -7,11 +7,21 @@ Solution for the Check Point home assignment implementing a file upload system.
 This project implements a file upload system using AWS services and containerized microservices.
 The system consists of two main services and comprehensive AWS infrastructure managed through Terraform.
 
+###Tech Stack:
+AWS: ECS (Fargate), Lambda, SQS (FIFO), EventBridge, ALB, VPC.
+IaC: Terraform (reusable modules, multiple workspaces)
+CI/CD: GitHub Actions (build, tag, push, deploy Docker images)
+App: Python microservices, Dockerized, SSM-managed secrets
+
 ### Key Components
 
 1. **Microservices**:
    - **Token Validator Service**: Validates upload tokens - ECS
    - **Uploader Service**: Handles file upload operations - Lambda
+
+> [!NOTE]
+> I decided to use both ECS and Lambda for a variety of reasons. ECS fits well for a polling microservice.
+> While Lambda enables an event-driven architecture, allowing us in the future to switch from a fixed polling rate to triggering on actual events.
 
 2. **AWS Infrastructure**:
    - ECS Fargate for container orchestration
@@ -19,34 +29,34 @@ The system consists of two main services and comprehensive AWS infrastructure ma
    - S3 for file storage
    - SQS for message queuing
    - Lambda for serverless processing
-   - Route53 for DNS management - not functioning currently on namecheap side  - https://alfee.site
+   - Route53 for DNS management - not functioning currently managedon namecheap side  - **https://alfee.site**
 
 ## Project Structure
 
 ```
 application/
-├── token-validator-service/    # Token validation microservice
+├── token-validator-service/     # Token validation microservice
 │   ├── app.py
 │   └── Dockerfile
-└── uploader-service/          # File upload microservice
+└── uploader-service/            # File upload microservice
     ├── app.py
     └── Dockerfile
 
-terraform/                     # Infrastructure as Code
-├── main.tf                   # Main Terraform configuration
-├── variables.tf              # Variable definitions
-├── outputs.tf                # Output configurations
-└── modules/                  # Terraform modules
-    ├── acm_cert/            # SSL/TLS certificate management
-    ├── alb/                 # Load balancer configuration
-    ├── ecr/                 # Container registry
-    ├── ecs_fargate/        # Container orchestration
-    ├── lambda_sqs_s3/      # Serverless processing
-    ├── route53/            # DNS configuration - can be ignored
-    ├── s3/                 # Object storage
-    ├── security_group/     # Network security
-    ├── sqs/                # Message queue
-    └── vpc/                # Network configuration
+terraform/                       # Infrastructure as Code
+├── main.tf                      # Main Terraform configuration
+├── variables.tf                 # Variable definitions
+├── outputs.tf                   # Output configurations
+└── modules/                     # Terraform modules
+    ├── acm_cert/                # SSL/TLS certificate management
+    ├── alb/                     # Load balancer configuration
+    ├── ecr/                     # Container registry
+    ├── ecs_fargate/             # Container orchestration
+    ├── lambda_sqs_s3/           # Serverless processing
+    ├── route53/                 # DNS configuration - can be ignored
+    ├── s3/                      # Object storage
+    ├── security_group/          # Network security
+    ├── sqs/                     # Message queue
+    └── vpc/                     # Network configuration
 ```
 
 ## Getting Started
@@ -135,4 +145,10 @@ Expected result:
 }
 ```
 
-
+## Future Improvements
+1. CloudFront + WAF – Enhance security and monitoring for URLs.
+2. Route53 migration – Move DNS from Namecheap to an AWS hosted zone for better management and state tracking.
+3. Security group enhancements – Refine rules for improved security.
+4. ECS autoscaling – Enable automatic scaling for the microservice.
+5. Testing – Implement unit and integration tests.
+6. Monitoring – Add observability for service health and metrics.
