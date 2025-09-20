@@ -128,7 +128,9 @@ We expect to see:
 
 ## GitHub Actions 
 There are 4 main workflows: 
+
 Build Token Validor Service - builds and pushes the docker to the relevant ECR with the tag: token-**run-number** (for example token-6). 
+
 Build Uploader Service - builds and pushes the docker to the relevant ECR with the tag: upload-**run-number** (for example upload-5). 
 
 Deploy Token Validator Service - Inputs:  
