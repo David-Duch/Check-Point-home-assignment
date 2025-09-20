@@ -9,7 +9,7 @@ region = os.getenv("AWS_REGION", "us-east-1")
 ssm = boto3.client("ssm", region_name=region)
 sqs = boto3.client("sqs", region_name=region)
 
-TOKEN_PARAM = os.getenv("TOKEN_PARAM", "/secure_token")
+TOKEN_PARAM = os.getenv("TOKEN_PARAM", "secure_token")
 SQS_URL = os.getenv("SQS_URL")
 
 def validate_payload(payload, token_value):

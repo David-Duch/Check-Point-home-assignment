@@ -29,36 +29,7 @@ resource "aws_iam_role_policy" "ecs_task_policy" {
     Statement = [
       {
         Effect = "Allow",
-        Action = [
-          "ssm:GetParameter",
-          "ssm:GetParameters"
-        ],
-        Resource = var.token_param_arn
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "sqs:SendMessage",
-          "sqs:GetQueueAttributes"
-        ],
-        Resource = var.sqs_arn
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ],
-        Resource = "*"
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "ecr:GetAuthorizationToken",
-          "ecr:BatchGetImage",
-          "ecr:GetDownloadUrlForLayer"
-        ],
+        Action = "*",
         Resource = "*"
       }
     ]
