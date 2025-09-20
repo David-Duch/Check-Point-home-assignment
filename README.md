@@ -126,12 +126,14 @@ We expect to see:
 There are 4 main workflows: 
 Build Token Validor Service - builds and pushes the docker to the relevant ECR with the tag: token-**run-number** (for example token-6). 
 Build Uploader Service - builds and pushes the docker to the relevant ECR with the tag: upload-**run-number** (for example upload-5). 
+
 Deploy Token Validator Service - Inputs:  
 ```
 Image tag: token-6
 Environment: prod
 ```
 This will tag the token-6 image with prod and will trigger ECS deployment with new image.
+
 Deploy Uploader Service - Inputs:
 ```
 Image tag: upload-5
