@@ -1,3 +1,6 @@
+
+ACTUAL AWS INFRA WAS ``` terraform destroy```ed. 
+
 # Check Point Home Assignment
 
 Solution for the Check Point home assignment implementing a message upload system.
